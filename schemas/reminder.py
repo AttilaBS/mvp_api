@@ -30,6 +30,18 @@ class ReminderSchema(BaseModel):
         if not len(v) > 0:
             raise ValueError('A descrição não pode ser vazia!')
         return v
+    
+    @validator('send_email')
+    def validator_send_email(cls, v):
+        if not isinstance(v, bool):
+            raise TypeError('Ocorreu um erro específico ao salvar o lembrete.')
+        return v
+    
+    @validator('recurring')
+    def validator_recurring(cls, v):
+        if not isinstance(v, bool):
+            raise TypeError('Ocorreu um erro específico ao salvar o lembrete.')
+        return v
 
 
 class ReminderUpdateSchema(BaseModel):
@@ -103,12 +115,12 @@ def show_reminder(reminder: Reminder):
         em ReminderViewSchema.
     '''
     return {
-        '1-id': reminder.id,
-        '2-nome': reminder.name,
-        '3-descrição': reminder.description,
-        '4-intervalo': reminder.interval,
-        '5-enviar email': reminder.send_email,
-        '6-recorrente': reminder.recurring
+        'id': reminder.id,
+        'nome': reminder.name,
+        'descrição': reminder.description,
+        'intervalo': reminder.interval,
+        'enviar email': reminder.send_email,
+        'recorrente': reminder.recurring
     }
 
 def show_reminders(reminders: List[Reminder]):
@@ -123,7 +135,7 @@ def show_reminders(reminders: List[Reminder]):
             'name': reminder.name,
             'description': reminder.description,
             'interval': reminder.interval,
-            'send_email': reminder.send_email,
-            'recurring': reminder.recurring
+            'send_email': 'Sim' if reminder.send_email else 'Não',
+            'recurring': 'Sim' if reminder.recurring else 'Não'
         })
     return {'reminders': result}
