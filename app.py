@@ -106,6 +106,22 @@ def get_reminder_name(query: ReminderSearchByNameSchema):
     logger.debug(f"Lembrete econtrado: '{reminder.name}'")
     return show_reminder(reminder), 200
 
+@app.get('/reminders', tags = [reminder_tag],
+         responses = {'200': RemindersListSchema, '404': ErrorSchema})
+def get_all_reminders():
+    '''
+        Retorna todos os lembretes salvos no banco.
+    '''
+    logger.debug(f'Retornando todos os lembretes')
+    session = Session()
+    reminders = session.query(Reminder).all()
+
+    if not reminders:
+        return {'Lembretes': []}, 200
+    
+    logger.debug(f'%d lembretes encontrados' % len(reminders))
+    return show_reminders(reminders), 200
+
 @app.put('/update', tags = [reminder_tag],
          responses = {'200': ReminderViewSchema, '404': ErrorSchema})
 def update(form: ReminderUpdateSchema):
@@ -130,22 +146,6 @@ def update(form: ReminderUpdateSchema):
         error_msg = 'Ocorreu um erro ao salvar o lembrete na base'
         logger.info(f'{error_msg} : {error}')
         return {'mensagem': error_msg}, 400
-
-@app.get('/reminders', tags = [reminder_tag],
-         responses = {'200': RemindersListSchema, '404': ErrorSchema})
-def get_all_reminders():
-    '''
-        Retorna todos os lembretes salvos no banco.
-    '''
-    logger.debug(f'Retornando todos os lembretes')
-    session = Session()
-    reminders = session.query(Reminder).all()
-
-    if not reminders:
-        return {'Lembretes': []}, 200
-    
-    logger.debug(f'%d lembretes encontrados' % len(reminders))
-    return show_reminders(reminders), 200
 
 @app.delete('/delete', tags = [reminder_tag],
             responses = {'200': ReminderDeleteSchema, '404': ErrorSchema})

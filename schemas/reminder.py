@@ -120,10 +120,10 @@ def show_reminders(reminders: List[Reminder]):
     for reminder in reminders:
         result.append({
             'id': reminder.id,
-            'nome': reminder.name,
-            'descrição': reminder.description,
-            'intervalo': reminder.interval,
-            'enviar email': reminder.send_email,
-            'recorrente': reminder.recurring
+            'name': reminder.name,
+            'description': reminder.description,
+            'interval': reminder.interval,
+            'send_email': reminder.send_email,
+            'recurring': reminder.recurring
         })
-    return {'lembretes': result}
+    return {'reminders': result}
