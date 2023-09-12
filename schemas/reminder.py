@@ -135,7 +135,7 @@ def show_reminders(reminders: List[Reminder]):
             'name': reminder.name,
             'description': reminder.description,
             'interval': reminder.interval,
-            'send_email': 'Sim' if reminder.send_email else 'Não',
-            'recurring': 'Sim' if reminder.recurring else 'Não'
+            'send_email': reminder.send_email,
+            'recurring': reminder.recurring
         })
     return {'reminders': result}
