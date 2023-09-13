@@ -149,24 +149,21 @@ def update(form: ReminderUpdateSchema):
 
 @app.delete('/delete', tags = [reminder_tag],
             responses = {'200': ReminderDeleteSchema, '404': ErrorSchema})
-def delete_reminder(query: ReminderSearchByNameSchema):
+def delete_reminder(query: ReminderSearchSchema):
     '''
-        Remove um lembrete a partir do nome informado.
+        Remove um lembrete a partir do id.
     '''
-    reminder_name = query.name
-    logger.debug(f"Deletando dados do lembrete #{reminder_name}")
+    reminder_id = query.id
+    logger.debug(f"Deletando dados do lembrete #{reminder_id}")
 
     session = Session()
-    was_deleted = session.query(Reminder).filter(Reminder.name == reminder_name).delete()
+    was_deleted = session.query(Reminder).filter(Reminder.id == reminder_id).delete()
     session.commit()
 
     if was_deleted:
-        logger.debug(f'Lembrete #{reminder_name} removido com sucesso.')
-        return {'message': 'Lembrete removido', 'nome': reminder_name}
+        logger.debug(f'Lembrete #{reminder_id} removido com sucesso.')
+        return {'message': 'Lembrete removido', 'nome': reminder_id}
     
     error_msg = 'Lembrete não encontrado :/'
-    logger.warning(f"Erro ao deletar lembrete #'{reminder_name}', {error_msg}")
+    logger.warning(f"Erro ao deletar lembrete #'{reminder_id}', {error_msg}")
     return {'message': error_msg}, 404
-
-if __name__ == '__main__':
-    app.run(debug=True)
