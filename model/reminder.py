@@ -17,6 +17,7 @@ class Reminder(Base):
     send_email = Column(Boolean, unique = False, default = False)
     recurring = Column(Boolean, unique = False, default = True)
     created_at = Column(DateTime, default = datetime.now())
+    updated_at = Column(DateTime, default = None)
 
     def __init__(
         self,
@@ -25,7 +26,8 @@ class Reminder(Base):
         interval:int,
         send_email:bool = False,
         recurring:bool = True,
-        created_at:Union[DateTime, None] = None):
+        created_at:Union[DateTime, None] = None,
+        updated_at:Union[DateTime, None] = None):
         self.name = name
         self.description = description
         self.interval = interval
@@ -34,3 +36,5 @@ class Reminder(Base):
 
         if not created_at:
             self.created_at = created_at
+        if not updated_at:
+            self.updated_at = updated_at

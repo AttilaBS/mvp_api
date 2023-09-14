@@ -2,6 +2,7 @@ from pydantic import BaseModel, validator
 from typing import Optional, List
 from model.reminder import Reminder
 from model import Session
+from datetime import datetime
 import re
 
 
@@ -54,6 +55,7 @@ class ReminderUpdateSchema(BaseModel):
     interval: Optional[int]
     send_email: Optional[bool]
     recurring: Optional[bool]
+    updated_at = datetime
 
     @validator('name')
     def validator_name(cls, v):

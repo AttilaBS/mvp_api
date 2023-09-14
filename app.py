@@ -9,6 +9,7 @@ from model import Session
 from logger import logger
 from schemas import *
 from flask_cors import CORS
+from datetime import datetime
 
 info = Info(title = 'Reminder API', version = '1.0.0')
 app = OpenAPI(__name__, info = info)
@@ -138,6 +139,7 @@ def update(form: ReminderUpdateSchema):
         reminder.interval = form.interval or reminder.interval
         reminder.send_email = form.send_email or reminder.send_email
         reminder.recurring = form.recurring or reminder.recurring
+        reminder.updated_at = datetime.now()
         session.commit()
         logger.debug(f'Lembrete atualizado, nome: {reminder.name}')
         return show_reminder(reminder), 200
