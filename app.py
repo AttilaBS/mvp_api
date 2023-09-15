@@ -4,12 +4,13 @@ from urllib.parse import unquote
 
 from sqlalchemy.exc import IntegrityError
 
-from model import Reminder
+from model import Reminder, Email
 from model import Session
 from logger import logger
 from schemas import *
 from flask_cors import CORS
 from datetime import datetime
+
 
 info = Info(title = 'Reminder API', version = '1.0.0')
 app = OpenAPI(__name__, info = info)
@@ -44,6 +45,7 @@ def create(form: ReminderSchema):
         interval = form.interval,
         send_email = form.send_email,
         recurring = form.recurring)
+    reminder.insert_email(Email(form.email))
 
     logger.debug(f'Adicionando um lembrete de nome: {reminder.name}')
     try:
@@ -138,6 +140,7 @@ def update(form: ReminderUpdateSchema):
         reminder.description = form.description or reminder.description
         reminder.interval = form.interval or reminder.interval
         reminder.send_email = form.send_email or reminder.send_email
+        reminder.email_relationship[0].email = form.email or reminder.email_relationship[0].email
         reminder.recurring = form.recurring or reminder.recurring
         reminder.updated_at = datetime.now()
         session.commit()

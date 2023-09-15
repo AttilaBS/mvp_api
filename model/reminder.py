@@ -1,10 +1,12 @@
-from sqlalchemy import Column, String, Integer, DateTime, Float, Boolean
+from sqlalchemy import Column, String, Integer, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from typing import Union
 #from unidecode import unidecode
 
+
 from model import Base
+from model import Email
 
 
 class Reminder(Base):
@@ -18,6 +20,8 @@ class Reminder(Base):
     recurring = Column(Boolean, unique = False, default = True)
     created_at = Column(DateTime, default = datetime.now())
     updated_at = Column(DateTime, default = None)
+    #relationship
+    email_relationship = relationship('Email')
 
     def __init__(
         self,
@@ -38,3 +42,9 @@ class Reminder(Base):
             self.created_at = created_at
         if not updated_at:
             self.updated_at = updated_at
+    
+    def insert_email(self, email:Email):
+        '''
+            Adiciona um email a um lembrete.
+        '''
+        self.email_relationship.append(email)

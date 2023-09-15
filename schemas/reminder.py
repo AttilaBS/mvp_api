@@ -3,7 +3,7 @@ from typing import Optional, List
 from model.reminder import Reminder
 from model import Session
 from datetime import datetime
-import re
+from logger import logger
 
 
 class ReminderSchema(BaseModel):
@@ -14,6 +14,7 @@ class ReminderSchema(BaseModel):
     description: str = 'trocar o óleo a cada 10 mil km no Moraes AutoCenter'
     interval: int = 180
     send_email: Optional[bool]
+    email: Optional[str]
     recurring: Optional[bool]
 
     @validator('name')
@@ -54,6 +55,7 @@ class ReminderUpdateSchema(BaseModel):
     description: Optional[str]
     interval: Optional[int]
     send_email: Optional[bool]
+    email: Optional[str]
     recurring: Optional[bool]
     updated_at = datetime
 
@@ -107,6 +109,7 @@ class ReminderViewSchema(BaseModel):
     name: str = 'Trocar o óleo do carro'
     description: str = 'trocar o óleo a cada 10 mil km no Moraes AutoCenter'
     interval: int = 180
+    email: Optional[str]
     send_email: Optional[bool]
     recurring: Optional[bool]
 
@@ -122,6 +125,7 @@ def show_reminder(reminder: Reminder):
         'descrição': reminder.description,
         'intervalo': reminder.interval,
         'enviar email': reminder.send_email,
+        'email': reminder.email_relationship[0].email,
         'recorrente': reminder.recurring
     }
 
@@ -138,6 +142,7 @@ def show_reminders(reminders: List[Reminder]):
             'description': reminder.description,
             'interval': reminder.interval,
             'send_email': reminder.send_email,
+            'email': reminder.email_relationship[0].email,
             'recurring': reminder.recurring
         })
     return {'reminders': result}

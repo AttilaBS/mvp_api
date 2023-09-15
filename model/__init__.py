@@ -4,6 +4,7 @@ from sqlalchemy import create_engine
 import os
 
 from model.base import Base
+from model.email import Email
 from model.reminder import Reminder
 
 db_path = 'database/'

@@ -59,7 +59,7 @@ dictConfig({
     },
     "root": {
         "handlers": ["console", "detailed_file"],
-        "level": "INFO",
+        "level": "DEBUG",
     }
 })
 
