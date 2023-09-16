@@ -9,7 +9,7 @@ from model import Session
 from logger import logger
 from schemas import *
 from flask_cors import CORS
-from datetime import datetime
+from datetime import datetime, date
 
 
 info = Info(title = 'Reminder API', version = '1.0.0')
@@ -43,18 +43,17 @@ def create(form: ReminderSchema):
     reminder = Reminder(
         name = form.name,
         description = form.description,
-        interval = form.interval,
+        due_date = datetime.strptime(form.due_date, "%Y-%m-%dT%H:%M:%S.%fZ"),
         send_email = form.send_email,
         recurring = form.recurring)
-    reminder.insert_email(Email(form.email))
 
     logger.debug(f'Adicionando um lembrete de nome: {reminder.name}')
     try:
+        reminder.insert_email(Email(form.email))
         session = Session()
         session.add(reminder)
-        logger.debug(f'adicionei reminder')
         session.commit()
-        logger.debug(f'Adicionando lembrete de nome: {reminder.name}')
+        logger.debug(f'Adicionado lembrete de nome: {reminder.name}')
         return show_reminder(reminder), 200
 
     except IntegrityError as e:
@@ -66,6 +65,7 @@ def create(form: ReminderSchema):
     except Exception as error:
         error_msg = 'Ocorreu um erro ao salvar o lembrete na base'
         logger.warning(f'{error_msg} : {error}')
+        logger.debug(f'{error_msg} : {error}')
         return {'mensagem': error_msg}, 400
 
 @app.get('/reminder', tags = [reminder_tag],
@@ -107,7 +107,7 @@ def get_reminder_name(query: ReminderSearchByNameSchema):
         logger.warning(f"Erro ao buscar lembrete '{reminder_name}', {error_msg}")
         return {"message": error_msg}, 404
     
-    logger.debug(f"Lembrete econtrado: '{reminder.name}'")
+    logger.debug(f"Lembrete encontrado: '{reminder.name}'")
     return show_reminder(reminder), 200
 
 @app.get('/reminders', tags = [reminder_tag],
@@ -130,7 +130,7 @@ def get_all_reminders():
          responses = {'200': ReminderViewSchema, '404': ErrorSchema})
 def update(form: ReminderUpdateSchema):
     '''
-        Atualiza um lembrete a partir do nome.
+        Atualiza um lembrete a partir do id.
     '''
     session = Session()
     reminder = session.query(Reminder).filter(Reminder.id == form.id).first()
@@ -139,11 +139,12 @@ def update(form: ReminderUpdateSchema):
     try:
         reminder.name = form.name or reminder.name
         reminder.description = form.description or reminder.description
-        reminder.interval = form.interval or reminder.interval
+        reminder.due_date = form.due_date or reminder.due_date
         reminder.send_email = form.send_email or reminder.send_email
         reminder.email_relationship[0].email = form.email or reminder.email_relationship[0].email
         reminder.recurring = form.recurring or reminder.recurring
         reminder.updated_at = datetime.now()
+
         session.commit()
         logger.debug(f'Lembrete atualizado, nome: {reminder.name}')
         return show_reminder(reminder), 200
@@ -163,16 +164,16 @@ def delete_reminder(query: ReminderSearchSchema):
     logger.debug(f"Deletando dados do lembrete #{reminder_id}")
 
     session = Session()
-    was_deleted = session.query(Reminder).filter(Reminder.id == reminder_id).delete()
-    session.commit()
-
-    if was_deleted:
+    try:
+        session.query(Reminder).filter(Reminder.id == reminder_id).delete()
+        session.commit()
+    except:
+        error_msg = 'Lembrete não encontrado :/'
+        logger.warning(f"Erro ao deletar lembrete #'{reminder_id}', {error_msg}")
+        return {'message': error_msg}, 404
+    else:
         logger.debug(f'Lembrete #{reminder_id} removido com sucesso.')
         return {'message': 'Lembrete removido', 'nome': reminder_id}
-    
-    error_msg = 'Lembrete não encontrado :/'
-    logger.warning(f"Erro ao deletar lembrete #'{reminder_id}', {error_msg}")
-    return {'message': error_msg}, 404
 
 @app.get('/send_email', tags = [email_tag])
 def send_email(query: ReminderSearchSchema):
@@ -183,7 +184,7 @@ def send_email(query: ReminderSearchSchema):
         f'''
             Olá usuário(a), este é um email automatizado para avisar
             que o lembrete nome:  {reminder.name}, de descrição: 
-            {reminder.description}, e criado há:  {reminder.interval} dias,
+            {reminder.description}, e criado há:  {reminder.due_date} dias,
             está para vencer, amanhã.
 
             Atenciosamente,

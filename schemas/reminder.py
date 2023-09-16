@@ -12,7 +12,7 @@ class ReminderSchema(BaseModel):
     '''
     name: str = 'Trocar o óleo do carro'
     description: str = 'trocar o óleo a cada 10 mil km no Moraes AutoCenter'
-    interval: int = 180
+    due_date: str = '2023-09-20T00:00:00.000Z'
     send_email: Optional[bool]
     email: Optional[str]
     recurring: Optional[bool]
@@ -53,11 +53,11 @@ class ReminderUpdateSchema(BaseModel):
     id: int
     name: Optional[str]
     description: Optional[str]
-    interval: Optional[int]
+    due_date: Optional[datetime]
     send_email: Optional[bool]
     email: Optional[str]
     recurring: Optional[bool]
-    updated_at = datetime
+    updated_at = datetime.now()
 
     @validator('name')
     def validator_name(cls, v):
@@ -108,7 +108,7 @@ class ReminderViewSchema(BaseModel):
     id: int = 1
     name: str = 'Trocar o óleo do carro'
     description: str = 'trocar o óleo a cada 10 mil km no Moraes AutoCenter'
-    interval: int = 180
+    due_date: datetime
     email: Optional[str]
     send_email: Optional[bool]
     recurring: Optional[bool]
@@ -121,12 +121,12 @@ def show_reminder(reminder: Reminder):
     '''
     return {
         'id': reminder.id,
-        'nome': reminder.name,
-        'descrição': reminder.description,
-        'intervalo': reminder.interval,
-        'enviar email': reminder.send_email,
+        'name': reminder.name,
+        'description': reminder.description,
+        'due_date': reminder.due_date,
+        'send_email': reminder.send_email,
         'email': reminder.email_relationship[0].email,
-        'recorrente': reminder.recurring
+        'recurring': reminder.recurring
     }
 
 def show_reminders(reminders: List[Reminder]):
@@ -140,7 +140,7 @@ def show_reminders(reminders: List[Reminder]):
             'id': reminder.id,
             'name': reminder.name,
             'description': reminder.description,
-            'interval': reminder.interval,
+            'due_date': reminder.due_date,
             'send_email': reminder.send_email,
             'email': reminder.email_relationship[0].email,
             'recurring': reminder.recurring
