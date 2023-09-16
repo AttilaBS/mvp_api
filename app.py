@@ -4,7 +4,7 @@ from urllib.parse import unquote
 
 from sqlalchemy.exc import IntegrityError
 
-from model import Reminder, Email
+from model import Reminder, Email, EmailClient
 from model import Session
 from logger import logger
 from schemas import *
@@ -19,6 +19,7 @@ CORS(app)
 # tags
 documentation_tag = Tag(name = 'Documentação', description = 'Seleção de documentação: Swagger')
 reminder_tag = Tag(name = 'Lembrete', description = 'Adição, edição, visualização e remoção de lembretes')
+email_tag = Tag(name = 'Envio de Email', description = 'Envia um email de lembrete')
 
 #rota home
 @app.get('/', tags = [documentation_tag])
@@ -172,3 +173,24 @@ def delete_reminder(query: ReminderSearchSchema):
     error_msg = 'Lembrete não encontrado :/'
     logger.warning(f"Erro ao deletar lembrete #'{reminder_id}', {error_msg}")
     return {'message': error_msg}, 404
+
+@app.get('/send_email', tags = [email_tag])
+def send_email(query: ReminderSearchSchema):
+    session = Session()
+    reminder = session.query(Reminder).filter(Reminder.id == query.id).first()
+    email_receiver = reminder.email_relationship[0].email
+    email_client = EmailClient(
+        f'''
+            Olá usuário(a), este é um email automatizado para avisar
+            que o lembrete nome:  {reminder.name}, de descrição: 
+            {reminder.description}, e criado há:  {reminder.interval} dias,
+            está para vencer, amanhã.
+
+            Atenciosamente,
+            Aplicativo Lembretes
+        ''',
+        email_receiver
+    )
+    email_client.prepare_and_send_email()
+
+    return {'message': f'Email do lembrete nome: {reminder.name} enviado!'}, 200

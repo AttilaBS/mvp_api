@@ -25,13 +25,13 @@ class Reminder(Base):
 
     def __init__(
         self,
-        name:str,
-        description:str, 
-        interval:int,
-        send_email:bool = False,
-        recurring:bool = True,
-        created_at:Union[DateTime, None] = None,
-        updated_at:Union[DateTime, None] = None):
+        name: str,
+        description: str,
+        interval: int,
+        send_email: bool = False,
+        recurring: bool = True,
+        created_at: Union[DateTime, None] = None,
+        updated_at: Union[DateTime, None] = None):
         self.name = name
         self.description = description
         self.interval = interval
