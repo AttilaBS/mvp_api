@@ -165,6 +165,7 @@ def delete_reminder(query: ReminderSearchSchema):
 
     session = Session()
     try:
+        session.query(Email).filter(Email.reminder == reminder_id).delete()
         session.query(Reminder).filter(Reminder.id == reminder_id).delete()
         session.commit()
     except:
