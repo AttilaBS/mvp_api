@@ -5,11 +5,11 @@
 
 ## Descrição do projeto:
       Este projeto faz parte das exigências da 1ª sprint da pós graduação 
-    da PUC-Rio, turma de julho de 2023. Neste projeto se encontra a API 
-    que possui como funcionalidades, além do CRUD básico (Create, Read 
-    ou Retrieve, Update e Delete), algumas funcionalidades extras como
-    envio de email, por exemplo. Este projeto é um MVP que é complementado
-    pelo front-end que se encontra em outro repositório.
+    da PUC-Rio, curso Engenharia de Software, turma de julho de 2023.
+    Neste projeto se encontra a API que possui como funcionalidades,
+    além do CRUD básico (Create, Read/Retrieve, Update e Delete), algumas funcionalidades extras como envio de email, por exemplo.
+    Este projeto é um MVP que é complementado pelo front-end que se
+    encontra em outro repositório.
 
       A aplicação tem como objetivo evitar com que compromissos sejam
     esquecidos, permitindo que o usuário cadastre lembretes que podem ser
