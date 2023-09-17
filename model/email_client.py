@@ -22,7 +22,10 @@ class EmailClient():
         self.email_sender = email_sender
         self.email_password = email_password
 
-    def prepare_and_send_email(self):
+    def prepare_and_send_email(self) -> None:
+        '''
+            Function to create the email and send it.
+        '''
         em = EmailMessage()
         em['From'] = self.email_sender
         em['To'] = self.email_receiver

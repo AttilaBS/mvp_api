@@ -5,6 +5,8 @@ from typing import Union
 from model import Base
 from model import Email
 
+from logger import logger
+
 
 class Reminder(Base):
     __tablename__ = 'reminder'
@@ -45,3 +47,17 @@ class Reminder(Base):
             Adiciona um email a um lembrete.
         '''
         self.email_relationship.append(email)
+
+    def validate_email_before_send(self) -> bool:
+        '''
+            Function to validate if send_email is True, and if there is
+            an email related to the reminder and if due_date is equal
+            or less than 24 hours from now.
+        '''
+        if self.send_email and self.email_relationship[0].email:
+            due_date = self.due_date
+            start_date = self.updated_at if self.updated_at else self.created_at
+            delta = due_date - start_date
+            if (delta.days <= 1):
+                return True
+        return False

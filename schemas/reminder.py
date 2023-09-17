@@ -3,7 +3,6 @@ from typing import Optional, List
 from model.reminder import Reminder
 from model import Session
 from datetime import datetime
-from logger import logger
 
 
 class ReminderSchema(BaseModel):
@@ -13,11 +12,11 @@ class ReminderSchema(BaseModel):
     name: str = 'Trocar o óleo do carro'
     description: str = 'trocar o óleo a cada 10 mil km no Moraes AutoCenter'
     due_date: str = '2023-09-20T00:00:00.000Z'
-    send_email: Optional[bool]
+    send_email: Optional[bool] = False
     email: Optional[str]
-    recurring: Optional[bool]
+    recurring: Optional[bool] = False
 
-    @validator('name')
+    @validator('name', allow_reuse = True)
     def validator_name(cls, v):
         if not len(v) > 0:
             raise ValueError('O nome não pode ser vazio!')
@@ -27,7 +26,7 @@ class ReminderSchema(BaseModel):
             raise ValueError('Já existe um lembrete de mesmo nome')
         return v
     
-    @validator('description')
+    @validator('description', allow_reuse = True)
     def validator_description(cls, v):
         if not len(v) > 0:
             raise ValueError('A descrição não pode ser vazia!')
@@ -50,13 +49,13 @@ class ReminderUpdateSchema(BaseModel):
     '''
         Define como um lembrete a ser atualizado pode ser salvo.
     '''
-    id: int
-    name: Optional[str]
-    description: Optional[str]
-    due_date: Optional[datetime]
-    send_email: Optional[bool]
-    email: Optional[str]
-    recurring: Optional[bool]
+    id: int = 1
+    name: Optional[str] = 'Ir no dentista'
+    description: Optional[str] = 'Marcar o retorno da consulta'
+    due_date: Optional[datetime] = '2023-10-20T00:00:00.000Z'
+    send_email: Optional[bool] = True
+    email: Optional[str] = 'emaildeexemplo@email.com'
+    recurring: Optional[bool] = False
     updated_at = datetime.now()
 
     @validator('name')
@@ -83,7 +82,7 @@ class ReminderSearchByNameSchema(BaseModel):
     '''
         Define como será a busca de lembrete apenas pelo nome.
     '''
-    name: str = 'teste'
+    name: str
 
 
 class ReminderDeleteSchema(BaseModel):
@@ -105,14 +104,21 @@ class ReminderViewSchema(BaseModel):
     '''
         Define como será a visualização de um lembrete.
     '''
-    id: int = 1
-    name: str = 'Trocar o óleo do carro'
-    description: str = 'trocar o óleo a cada 10 mil km no Moraes AutoCenter'
+    id: int
+    name: str
+    description: str
     due_date: datetime
     email: Optional[str]
     send_email: Optional[bool]
     recurring: Optional[bool]
 
+
+class EmailSentSchema(BaseModel):
+    '''
+        Define como será a resposta ao enviar um email de lembrete.
+    '''
+    message: str
+    name: str
 
 def show_reminder(reminder: Reminder):
     '''
