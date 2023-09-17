@@ -18,23 +18,23 @@
 ## Árvore de módulos. O sistema de pastas e arquivos do projeto está estruturado:
     Projeto
     |__ database
-      |__ db.sqlite3
-    log
-      |__ gunicorn.detailed.log
-    model
-      |__ __init__.py
-      |__ base.py
-      |__ email_client.py
-      |__ email.py
-      |__ reminder.py
-    schemas
-      |__ __init__.py
-      |__ error.py
-      |__ reminder.py
-    .env (não será commitado por questões de segurança)
-    app.py
-    logger.py
-    requirements.txt
+        |__ db.sqlite3
+    |__ log
+        |__ gunicorn.detailed.log
+    |__ model
+        |__ __init__.py
+        |__ base.py
+        |__ email_client.py
+        |__ email.py
+        |__ reminder.py
+    |__ schemas
+        |__ __init__.py
+        |__ error.py
+        |__ reminder.py
+    |__ .env (não será commitado por questões de segurança)
+    |__ app.py
+    |__ logger.py
+    |__ requirements.txt
 
 ## Como executar
 Será necessário ter todas as libs python listadas no requirements.txt instaladas. 
