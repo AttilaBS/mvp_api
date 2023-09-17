@@ -189,17 +189,11 @@ def validate_send_email(query: ReminderSearchSchema):
         email_receiver = reminder.email_relationship[0].email
         due_date_adjusted = reminder.due_date.strftime("%d/%m/%Y")
         email_client = EmailClient(
-            f'''
-                Olá usuário(a), este é um email automatizado para avisar
-                que o lembrete nome:  {reminder.name}, de descrição: 
-                {reminder.description}, e com data final: {due_date_adjusted},
-                está próximo à data estipulada.
-
-                Atenciosamente,
-                Aplicativo Lembretes
-            ''',
+            reminder.name,
+            reminder.description,
+            due_date_adjusted,
             email_receiver
-        )
+            )
         try:
             email_client.prepare_and_send_email()
             return {'message': f'Email enviado para o destinatário: {email_receiver}'}, 200
