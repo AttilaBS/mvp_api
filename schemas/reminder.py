@@ -3,6 +3,7 @@ from typing import Optional, List
 from model.reminder import Reminder
 from model import Session
 from datetime import datetime
+import re
 
 
 class ReminderSchema(BaseModel):
@@ -20,6 +21,8 @@ class ReminderSchema(BaseModel):
     def validator_name(cls, v):
         if not len(v) > 0:
             raise ValueError('O nome não pode ser vazio!')
+        if re.search('[0-9]', v):
+            raise ValueError('O nome do lembrete não pode conter números')
         session = Session()
         reminder = session.query(Reminder).filter(Reminder.name == v).first()
         if reminder:
@@ -58,10 +61,16 @@ class ReminderUpdateSchema(BaseModel):
     recurring: Optional[bool] = False
     updated_at = datetime.now()
 
-    @validator('name')
+    @validator('name', allow_reuse = True)
     def validator_name(cls, v):
         if not len(v) > 0:
             raise ValueError('O nome não pode ser vazio!')
+        if re.search('[0-9]', v):
+            raise ValueError('O nome do lembrete não pode conter números')
+        session = Session()
+        reminder = session.query(Reminder).filter(Reminder.name == v).first()
+        if reminder:
+            raise ValueError('Já existe um lembrete de mesmo nome')
         return v
     
     @validator('description')
