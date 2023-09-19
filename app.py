@@ -148,6 +148,7 @@ def update(form: ReminderUpdateSchema):
     logger.debug('Alterando um lembrete de nome: %s', reminder.name)
     try:
         reminder.name = form.name or reminder.name
+        reminder.name_normalized = unidecode(form.name.lower())
         reminder.description = form.description or reminder.description
         reminder.due_date = form.due_date or reminder.due_date
         reminder.send_email = form.send_email
