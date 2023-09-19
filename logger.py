@@ -1,10 +1,11 @@
+'''Module responsible for application logging'''
 from logging.config import dictConfig
 import logging
 import os
 
-log_path = 'log/'
-if not os.path.exists(log_path):
-    os.makedirs(log_path)
+LOG_PATH = 'log/'
+if not os.path.exists(LOG_PATH):
+    os.makedirs(LOG_PATH)
 
 dictConfig({
     "version": 1,
@@ -36,7 +37,7 @@ dictConfig({
         "error_file": {
             "class": "logging.handlers.RotatingFileHandler",
             "formatter": "detailed",
-            "filename": "log/gunicorn.error.log",
+            "filename": "log/error.log",
             "maxBytes": 10000,
             "backupCount": 10,
             "delay": "True",
@@ -44,7 +45,7 @@ dictConfig({
         "detailed_file": {
             "class": "logging.handlers.RotatingFileHandler",
             "formatter": "detailed",
-            "filename": "log/gunicorn.detailed.log",
+            "filename": "log/detailed.log",
             "maxBytes": 10000,
             "backupCount": 10,
             "delay": "True",
