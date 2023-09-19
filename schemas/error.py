@@ -1,3 +1,4 @@
+'''Schema responsible for defining how error messages are displayed'''
 from pydantic import BaseModel
 
 

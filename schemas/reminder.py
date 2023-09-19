@@ -1,9 +1,12 @@
-from pydantic import BaseModel, validator
+'''
+    Schema responsible for defining how routes return messages are
+    displayed and also for routes parameters validation.
+'''
 from typing import Optional, List
-from model.reminder import Reminder
-from model import Session
-from datetime import datetime
 import re
+from datetime import datetime
+from pydantic import BaseModel, validator
+from model.reminder import Reminder
 
 
 class ReminderSchema(BaseModel):
@@ -18,18 +21,20 @@ class ReminderSchema(BaseModel):
     recurring: Optional[bool] = False
 
     @validator('name', allow_reuse = True)
-    def validator_name(cls, v):
-        if not len(v) > 0:
+    def validator_name(cls, parameter):
+        '''Validator for name'''
+        if not len(parameter) > 0:
             raise ValueError('O nome não pode ser vazio!')
-        if re.search('[0-9]', v):
+        if re.search('[0-9]', parameter):
             raise ValueError('O nome do lembrete não pode conter números')
-        return v
-    
+        return parameter
+
     @validator('description', allow_reuse = True)
-    def validator_description(cls, v):
-        if not len(v) > 0:
+    def validator_description(cls, parameter):
+        '''Validator for description'''
+        if not len(parameter) > 0:
             raise ValueError('A descrição não pode ser vazia!')
-        return v
+        return parameter
 
 
 class ReminderUpdateSchema(BaseModel):
@@ -47,18 +52,20 @@ class ReminderUpdateSchema(BaseModel):
     updated_at = datetime.now()
 
     @validator('name', allow_reuse = True)
-    def validator_name(cls, v):
-        if not len(v) > 0:
+    def validator_name(cls, parameter):
+        '''Validator for name'''
+        if not len(parameter) > 0:
             raise ValueError('O nome não pode ser vazio!')
-        if re.search('[0-9]', v):
+        if re.search('[0-9]', parameter):
             raise ValueError('O nome do lembrete não pode conter números')
-        return v
-    
+        return parameter
+
     @validator('description')
-    def validator_description(cls, v):
-        if not len(v) > 0:
+    def validator_description(cls, parameter):
+        '''Validator for description'''
+        if not len(parameter) > 0:
             raise ValueError('A descrição não pode ser vazia!')
-        return v
+        return parameter
 
 
 class ReminderSearchSchema(BaseModel):
