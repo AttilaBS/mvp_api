@@ -51,13 +51,19 @@ class Reminder(Base):
     def validate_email_before_send(self) -> bool:
         '''
             Function to validate if send_email is True, and if there is
-            an email related to the reminder and if due_date is equal
-            or less than 24 hours from now.
+            an email related to the reminder.
         '''
         if self.send_email and self.email_relationship[0].email:
-            due_date = self.due_date
-            start_date = self.updated_at if self.updated_at else self.created_at
-            delta = due_date - start_date
-            if (delta.days <= 1):
-                return True
+            return True
+        return False
+
+    def validate_due_date(self) -> bool:
+        '''
+            Validate if due_date is one day or less than today.
+        '''
+        due_date = self.due_date
+        current_datetime = datetime.now()
+        delta = due_date - current_datetime
+        if (delta.days <= 1):
+            return True
         return False

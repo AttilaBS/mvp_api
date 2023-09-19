@@ -7,13 +7,14 @@
       Este projeto faz parte das exigências da 1ª sprint da pós graduação 
     da PUC-Rio, curso Engenharia de Software, turma de julho de 2023.
     Neste projeto se encontra a API que possui como funcionalidades,
-    além do CRUD básico (Create, Read/Retrieve, Update e Delete), algumas funcionalidades extras como envio de email, por exemplo.
+    além do CRUD básico (Create, Read/Retrieve, Update e Delete),
+    algumas funcionalidades extras como envio de email, por exemplo.
     Este projeto é um MVP que é complementado pelo front-end que se
     encontra em outro repositório.
 
       A aplicação tem como objetivo evitar com que compromissos sejam
     esquecidos, permitindo que o usuário cadastre lembretes que podem ser
-    facilmente recuperados, editados ou removidos.
+    facilmente criados, recuperados, editados ou removidos.
 
 ## Árvore de módulos. O sistema de pastas e arquivos do projeto está estruturado:
     Projeto
@@ -80,9 +81,11 @@ Abra o http://localhost:5000/#/ no navegador para verificar o status da API em e
     partir de outras classes que não a base, sejam realizadas.
 
   # email_client.py
-      Responsável por enviar email com as informações do lembrete. 
-    Obs.: Esta classe não está completamente implementada, visto que o 
-    objetivo principal é enviar emails de forma agendada, quando certa 
+      Responsável por enviar email com as informações do lembrete.
+    Atualmente, um email é enviado quando o lembrete é criado
+    e também quando o lembrete é editado / atualizado.
+    Obs.: Esta classe não está completamente implementada, visto que um 
+    dos objetivos principais é enviar emails de forma agendada, quando certa 
     regra de negócio for alcançada. O envio agendado não é possível de 
     forma ideal em ambiente local e demanda configurações específicas no
     ambiente de teste. Mesmo assim, é possível testar a funcionalidade via

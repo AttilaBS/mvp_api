@@ -23,28 +23,12 @@ class ReminderSchema(BaseModel):
             raise ValueError('O nome não pode ser vazio!')
         if re.search('[0-9]', v):
             raise ValueError('O nome do lembrete não pode conter números')
-        session = Session()
-        reminder = session.query(Reminder).filter(Reminder.name == v).first()
-        if reminder:
-            raise ValueError('Já existe um lembrete de mesmo nome')
         return v
     
     @validator('description', allow_reuse = True)
     def validator_description(cls, v):
         if not len(v) > 0:
             raise ValueError('A descrição não pode ser vazia!')
-        return v
-    
-    @validator('send_email')
-    def validator_send_email(cls, v):
-        if not isinstance(v, bool):
-            raise TypeError('Ocorreu um erro específico ao salvar o lembrete.')
-        return v
-    
-    @validator('recurring')
-    def validator_recurring(cls, v):
-        if not isinstance(v, bool):
-            raise TypeError('Ocorreu um erro específico ao salvar o lembrete.')
         return v
 
 
@@ -67,10 +51,6 @@ class ReminderUpdateSchema(BaseModel):
             raise ValueError('O nome não pode ser vazio!')
         if re.search('[0-9]', v):
             raise ValueError('O nome do lembrete não pode conter números')
-        session = Session()
-        reminder = session.query(Reminder).filter(Reminder.name == v).first()
-        if reminder:
-            raise ValueError('Já existe um lembrete de mesmo nome')
         return v
     
     @validator('description')

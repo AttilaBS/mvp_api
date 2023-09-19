@@ -13,7 +13,6 @@ info = Info(title = 'Reminder API', version = '1.0.0')
 app = OpenAPI(__name__, info = info)
 CORS(app)
 
-# tags
 documentation_tag = Tag(name = 'Documentação', description = 'Seleção de documentação: Swagger')
 reminder_tag = Tag(name = 'Lembrete', description = 'Adição, edição, visualização individual ou geral e remoção de lembretes')
 email_tag = Tag(name = 'Envio de Email', description = 'Envia um email de lembrete caso a data estipulada no lembrete esteja próxima')
@@ -47,6 +46,18 @@ def create(form: ReminderSchema):
         session.add(reminder)
         session.commit()
         logger.debug(f'Adicionado lembrete de nome: {reminder.name}')
+
+        if reminder.validate_email_before_send():
+            #Sending email if has an email and send_email is True
+            email_receiver = reminder.email_relationship[0].email
+            due_date_adjusted = reminder.due_date.strftime("%d/%m/%Y")
+            email_client = EmailClient(
+                reminder.name,
+                reminder.description,
+                due_date_adjusted,
+                email_receiver
+                )
+            email_client.prepare_and_send_email(flag_create = True)
 
         return show_reminder(reminder), 200
 
@@ -143,6 +154,19 @@ def update(form: ReminderUpdateSchema):
 
         session.commit()
         logger.debug(f'Lembrete atualizado, nome: {reminder.name}')
+
+        if reminder.validate_email_before_send():
+            #Sending email if has an email and send_email is True
+            email_receiver = reminder.email_relationship[0].email
+            due_date_adjusted = reminder.due_date.strftime("%d/%m/%Y")
+            email_client = EmailClient(
+                reminder.name,
+                reminder.description,
+                due_date_adjusted,
+                email_receiver
+                )
+            email_client.prepare_and_send_email(flag_update = True)
+
         return show_reminder(reminder), 200
 
     except Exception as error:
@@ -179,13 +203,16 @@ def delete_reminder(query: ReminderSearchSchema):
 def validate_send_email(query: ReminderSearchSchema):
     '''
         Esta rota envia um email com as informações do lembrete, ao email cadastrado.
-        Lembrete a 1 dia ou menos de alcançar o due_date.
+        Regras para enviar email por esta rota:
+        1) Email cadastrado no lembrete,
+        2) Boolean send_email como True,
+        3) Lembrete a 1 dia ou menos de alcançar a data final (due_date).
     '''
     session = Session()
     reminder = session.query(Reminder).filter(Reminder.id == query.id).first()
     send_email: bool = reminder.validate_email_before_send()
 
-    if send_email:
+    if send_email and reminder.validate_due_date():
         email_receiver = reminder.email_relationship[0].email
         due_date_adjusted = reminder.due_date.strftime("%d/%m/%Y")
         email_client = EmailClient(
@@ -195,8 +222,8 @@ def validate_send_email(query: ReminderSearchSchema):
             email_receiver
             )
         try:
-            email_client.prepare_and_send_email()
-            return {'message': f'Email enviado para o destinatário: {email_receiver}'}, 200
+            email_client.prepare_and_send_email(flag_due_date = True)
+            return {'message': f'Email avisando do prazo final do lembrete enviado para o destinatário: {email_receiver}'}, 200
         except Exception as error:
             logger.warning(f'Erro ao validar e enviar email para lembrete#{reminder.id}, erro : {error}')
             return {'message': 'Ocorreu um erro ao enviar o email.'}, 404
