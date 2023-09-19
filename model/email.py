@@ -1,11 +1,12 @@
-from sqlalchemy import Column, String, Integer, DateTime, ForeignKey
+'''Module responsible for email relationship model'''
 from datetime import datetime
 from typing import Union
-
+from sqlalchemy import Column, String, Integer, DateTime, ForeignKey
 from model import Base
 
 
 class Email(Base):
+    '''Class representing an email'''
     __tablename__ = 'email'
 
     id = Column(Integer, primary_key = True)
