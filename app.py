@@ -1,5 +1,7 @@
 from flask_openapi3 import OpenAPI, Info, Tag
 from flask import redirect
+from urllib.parse import unquote
+from unidecode import unidecode
 from sqlalchemy.exc import IntegrityError
 from model import Reminder, Email, EmailClient
 from model import Session
@@ -35,7 +37,7 @@ def create(form: ReminderSchema):
     reminder = Reminder(
         name = form.name,
         description = form.description,
-        due_date = datetime.strptime(form.due_date, "%Y-%m-%dT%H:%M:%S.%fZ"),
+        due_date = datetime.strptime(form.due_date, '%Y-%m-%dT%H:%M:%S.%fZ'),
         send_email = form.send_email,
         recurring = form.recurring)
 
@@ -50,7 +52,7 @@ def create(form: ReminderSchema):
         if reminder.validate_email_before_send():
             #Sending email if has an email and send_email is True
             email_receiver = reminder.email_relationship[0].email
-            due_date_adjusted = reminder.due_date.strftime("%d/%m/%Y")
+            due_date_adjusted = reminder.due_date.strftime('%d/%m/%Y')
             email_client = EmailClient(
                 reminder.name,
                 reminder.description,
@@ -81,7 +83,7 @@ def get_reminder(query: ReminderSearchSchema):
         Retorna o lembrete buscado pelo id.
     '''
     reminder_id = query.id
-    logger.info(f"Coletando dados sobre o lembrete #{reminder_id}")
+    logger.info(f'Coletando dados sobre o lembrete #{reminder_id}')
     
     try:
         session = Session()
@@ -89,10 +91,10 @@ def get_reminder(query: ReminderSearchSchema):
         logger.info(f'reminder: {reminder.name}')
     except:
         error_msg = 'O lembrete buscado não existe.'
-        logger.warning(f"Erro ao buscar lembrete '{reminder_id}', {error_msg}")
+        logger.warning(f'Erro ao buscar lembrete {reminder_id}, {error_msg}')
 
-        return {"message": error_msg}, 404
-    logger.debug(f"Lembrete econtrado: '{reminder.name}'")
+        return {'mensagem': error_msg}, 404
+    logger.debug(f'Lembrete econtrado: {reminder.name}')
 
     return show_reminder(reminder), 200
 
@@ -104,17 +106,18 @@ def get_reminder_name(query: ReminderSearchByNameSchema):
     '''
     reminder_name = query.name
     logger.info(f'Coletando dados sobre o lembrete #{reminder_name}')
-    try:
-        session = Session()
-        reminder = session.query(Reminder).filter(Reminder.name == reminder_name).first()
-        logger.info(f'reminder: {reminder.name}')
-    except:
-        error_msg = 'O lembrete buscado não existe.'
-        logger.warning(f"Erro ao buscar lembrete '{reminder_name}', {error_msg}")
 
-        return {"message": error_msg}, 404
+    session = Session()
+    name_normalized = unidecode(reminder_name.lower())
+    logger.debug(f'normalized : {name_normalized}')
+    reminder = session.query(Reminder).filter(Reminder.name_normalized == name_normalized).first()
+
+    error_msg = 'O lembrete buscado não existe.'
+    if not reminder:
+        logger.warning(f'Erro ao buscar lembrete {reminder_name}, {error_msg}')
+        return {'mensagem': error_msg}, 404
     
-    logger.debug(f"Lembrete encontrado: '{reminder.name}'")
+    logger.debug(f'Lembrete encontrado: {reminder.name}')
     return show_reminder(reminder), 200
 
 @app.get('/reminders', tags = [reminder_tag],
@@ -147,9 +150,9 @@ def update(form: ReminderUpdateSchema):
         reminder.name = form.name or reminder.name
         reminder.description = form.description or reminder.description
         reminder.due_date = form.due_date or reminder.due_date
-        reminder.send_email = form.send_email or reminder.send_email
-        reminder.email_relationship[0].email = form.email or reminder.email_relationship[0].email
-        reminder.recurring = form.recurring or reminder.recurring
+        reminder.send_email = form.send_email
+        reminder.email_relationship[0].email = form.email
+        reminder.recurring = form.recurring
         reminder.updated_at = datetime.now()
 
         session.commit()
@@ -158,7 +161,7 @@ def update(form: ReminderUpdateSchema):
         if reminder.validate_email_before_send():
             #Sending email if has an email and send_email is True
             email_receiver = reminder.email_relationship[0].email
-            due_date_adjusted = reminder.due_date.strftime("%d/%m/%Y")
+            due_date_adjusted = reminder.due_date.strftime('%d/%m/%Y')
             email_client = EmailClient(
                 reminder.name,
                 reminder.description,
@@ -181,7 +184,7 @@ def delete_reminder(query: ReminderSearchSchema):
         Remove um lembrete pelo id.
     '''
     reminder_id = query.id
-    logger.debug(f"Deletando dados do lembrete #{reminder_id}")
+    logger.debug(f'Deletando dados do lembrete #{reminder_id}')
 
     session = Session()
     try:
@@ -192,11 +195,11 @@ def delete_reminder(query: ReminderSearchSchema):
         session.commit()
     except:
         error_msg = 'Lembrete não encontrado :/'
-        logger.warning(f"Erro ao deletar lembrete #'{reminder_id}', {error_msg}")
-        return {'message': error_msg}, 404
+        logger.warning(f'Erro ao deletar lembrete #{reminder_id}, {error_msg}')
+        return {'mensagem': error_msg}, 404
     else:
         logger.debug(f'Lembrete #{reminder_id} removido com sucesso.')
-        return {'message': 'Lembrete removido', 'nome': reminder.name}
+        return {'mensagem': 'Lembrete removido', 'nome': reminder.name}
 
 @app.get('/send_email', tags = [email_tag],
          responses = {'200': EmailSentSchema, '404': ErrorSchema})
@@ -214,7 +217,7 @@ def validate_send_email(query: ReminderSearchSchema):
 
     if send_email and reminder.validate_due_date():
         email_receiver = reminder.email_relationship[0].email
-        due_date_adjusted = reminder.due_date.strftime("%d/%m/%Y")
+        due_date_adjusted = reminder.due_date.strftime('%d/%m/%Y')
         email_client = EmailClient(
             reminder.name,
             reminder.description,
@@ -223,13 +226,13 @@ def validate_send_email(query: ReminderSearchSchema):
             )
         try:
             email_client.prepare_and_send_email(flag_due_date = True)
-            return {'message': f'Email avisando do prazo final do lembrete enviado para o destinatário: {email_receiver}'}, 200
+            return {'mensagem': f'Email avisando do prazo final do lembrete enviado para o destinatário: {email_receiver}'}, 200
         except Exception as error:
             logger.warning(f'Erro ao validar e enviar email para lembrete#{reminder.id}, erro : {error}')
-            return {'message': 'Ocorreu um erro ao enviar o email.'}, 404
+            return {'mensagem': 'Ocorreu um erro ao enviar o email.'}, 404
     else:
         if not reminder.email_relationship[0].email:
-            return {'message': f'O lembrete não possui email cadastrado'}, 200
+            return {'mensagem': f'O lembrete não possui email cadastrado'}, 200
         if not reminder.send_email:
-            return {'message': f'O usuário optou por não receber email.'}, 200
-        return {'message': f'A data do lembrete é {reminder.due_date} e, portanto, superior à 1 dia a data atual'}, 200
+            return {'mensagem': f'O usuário optou por não receber email.'}, 200
+        return {'mensagem': f'A data do lembrete é {reminder.due_date} e, portanto, superior à 1 dia a data atual'}, 200

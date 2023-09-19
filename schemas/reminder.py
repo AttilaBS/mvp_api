@@ -38,6 +38,7 @@ class ReminderUpdateSchema(BaseModel):
     '''
     id: int = 1
     name: Optional[str] = 'Ir no dentista'
+    name_normalized: str = 'ir no dentista'
     description: Optional[str] = 'Marcar o retorno da consulta'
     due_date: Optional[datetime] = '2023-10-20T00:00:00.000Z'
     send_email: Optional[bool] = True
@@ -95,6 +96,7 @@ class ReminderViewSchema(BaseModel):
     '''
     id: int
     name: str
+    name_normalized: str
     description: str
     due_date: datetime
     email: Optional[str]
@@ -117,6 +119,7 @@ def show_reminder(reminder: Reminder):
     return {
         'id': reminder.id,
         'name': reminder.name,
+        'name_normalized': reminder.name_normalized,
         'description': reminder.description,
         'due_date': reminder.due_date,
         'send_email': reminder.send_email,
@@ -134,6 +137,7 @@ def show_reminders(reminders: List[Reminder]):
         result.append({
             'id': reminder.id,
             'name': reminder.name,
+            'name_normalized': reminder.name_normalized,
             'description': reminder.description,
             'due_date': reminder.due_date,
             'send_email': reminder.send_email,

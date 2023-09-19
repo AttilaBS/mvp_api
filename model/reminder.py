@@ -2,6 +2,7 @@ from sqlalchemy import Column, String, Integer, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from typing import Union
+from unidecode import unidecode
 from model import Base
 from model import Email
 
@@ -13,6 +14,7 @@ class Reminder(Base):
 
     id = Column('pk_reminder', Integer, primary_key = True)
     name = Column(String(60), unique = True)
+    name_normalized = Column(String(140))
     description = Column(String(255))
     due_date = Column(DateTime)
     send_email = Column(Boolean, unique = False, default = False)
@@ -32,6 +34,7 @@ class Reminder(Base):
         created_at: Union[DateTime, None] = None,
         updated_at: Union[DateTime, None] = None):
         self.name = name
+        self.name_normalized = unidecode(name.lower())
         self.description = description
         self.due_date = due_date
         self.send_email = send_email
