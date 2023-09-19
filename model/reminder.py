@@ -1,15 +1,15 @@
+'''Module responsible for reminder model'''
+from typing import Union
+from datetime import datetime
 from sqlalchemy import Column, String, Integer, DateTime, Boolean
 from sqlalchemy.orm import relationship
-from datetime import datetime
-from typing import Union
 from unidecode import unidecode
 from model import Base
 from model import Email
 
-from logger import logger
-
 
 class Reminder(Base):
+    '''Class representing a reminder'''
     __tablename__ = 'reminder'
 
     id = Column('pk_reminder', Integer, primary_key = True)
@@ -44,7 +44,7 @@ class Reminder(Base):
             self.created_at = created_at
         if not updated_at:
             self.updated_at = updated_at
-    
+
     def insert_email(self, email:Email):
         '''
             Adiciona um email a um lembrete.
@@ -67,6 +67,6 @@ class Reminder(Base):
         due_date = self.due_date
         current_datetime = datetime.now()
         delta = due_date - current_datetime
-        if (delta.days <= 1):
+        if delta.days <= 1:
             return True
         return False
