@@ -1,14 +1,15 @@
+'''Module responsible for email formatting and sending'''
 import os
-from dotenv import load_dotenv
 from email.message import EmailMessage
 import ssl
 import smtplib
+from dotenv import load_dotenv
 
 load_dotenv('../.env')
 
 
 class EmailClient():
-
+    '''Class representing a email_client'''
     def __init__(
         self,
         name: str,
@@ -34,10 +35,10 @@ class EmailClient():
         '''
             Function to create the email and send it.
         '''
-        em = EmailMessage()
+        message = EmailMessage()
         if flag_create or flag_update:
             term = 'criado' if flag_update is None else 'atualizado'
-            em.set_content(f'''
+            message.set_content(f'''
                     Olá usuário(a), este é um email automatizado para avisar
                     que o lembrete nome:  {self.name}, de descrição:
                     {self.description}, e com data final: {self.due_date},
@@ -46,7 +47,7 @@ class EmailClient():
                     Atenciosamente,
                     Aplicativo Lembretes
                 ''')
-            em.add_alternative(f'''\
+            message.add_alternative(f'''\
             <!DOCTYPE html>
                 <html>
                     <body>
@@ -63,7 +64,7 @@ class EmailClient():
                 </html>
             ''', subtype = 'html')
         elif flag_due_date:
-            em.set_content(f'''
+            message.set_content(f'''
                     Olá usuário(a), este é um email automatizado para avisar
                     que o lembrete nome:  {self.name}, de descrição:
                     {self.description}, e com data final: {self.due_date},
@@ -72,7 +73,7 @@ class EmailClient():
                     Atenciosamente,
                     Aplicativo Lembretes
                 ''')
-            em.add_alternative(f'''\
+            message.add_alternative(f'''\
             <!DOCTYPE html>
                 <html>
                     <body>
@@ -88,10 +89,10 @@ class EmailClient():
                     </body>
                 </html>
             ''', subtype = 'html')
-        em['From'] = self.email_sender
-        em['To'] = self.email_receiver
-        em['Subject'] = self.subject
+        message['From'] = self.email_sender
+        message['To'] = self.email_receiver
+        message['Subject'] = self.subject
         context = ssl.create_default_context()
         with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
             smtp.login(self.email_sender, self.email_password)
-            smtp.sendmail(self.email_sender, self.email_receiver, em.as_string())
+            smtp.sendmail(self.email_sender, self.email_receiver, message.as_string())
