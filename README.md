@@ -1,7 +1,7 @@
 # Lembretes API
 
 ## Vídeo de demonstração das rotas e da aplicação:
-    Link: https://youtu.be/I2Brq80Yjmk
+    Link: https://youtu.be/EI1YREB8ulw
 
 ## Descrição do projeto:
       Este projeto faz parte das exigências da 1ª sprint da pós graduação 
