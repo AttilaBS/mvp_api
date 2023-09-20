@@ -44,91 +44,90 @@ poder executar os comandos descritos abaixo.
 
 É fortemente indicado o uso de ambientes virtuais do tipo virtualenv.
 
-Passos para o ambiente virtual: 
-    1# python3 -m pip install --user pipx
-    2# pipx install virtualenv
-    3# mkdir <diretorio_ambiente_virtual>
-    4# cd <diretorio_ambiente_virtual>
-    5# source <diretorio_ambiente_virtual>/bin/activate
+Passos para o ambiente virtual:
+
+    #1 python3 -m pip install --user pipx
+    #2 pipx install virtualenv
+    #3 mkdir <diretorio_ambiente_virtual>
+    #4 cd <diretorio_ambiente_virtual>
+    #5 source <diretorio_ambiente_virtual>/bin/activate
 
 Em qualquer dos cenários (ambiente virtual ou não), no diretório raiz da
-aplicação e instalar os requerimentos com:
-pip install -r requirements.txt
+aplicação instalar os requerimentos com:
+ 
+ pip install -r requirements.txt
 
 Para executar a API, executar:
-(env)$ flask run --host 0.0.0.0 --port 5000 --reload
+$ flask run --host 0.0.0.0 --port 5000 --reload
 
 Abra o http://localhost:5000/#/ no navegador para verificar o status da API em execução.
 
 ## Responsabilidades dos arquivos do projeto
 
-# Pasta database:
-    # db.sqlite3
+## Pasta database:
+  ### db.sqlite3
         Arquivo onde as operações no projeto são persistidas usando o banco
     de dados relacional SQLite.
 
-    # gunicorn.detailed
+  ### detailed.log
         Arquivo de log principal da aplicação, é um arquivo de texto 
     responsável por armazenar informações de debug, erros e também sucesso.
 
-# Pasta model:
-  # __init__.py
+## Pasta model:
+  ### \_\_init\_\_.py
       Responsável por inicializar o banco de dados e também por criá-lo na
     primeira execução do projeto.
 
-  # base.py
+  ### base.py
       Relacionado ao módulo SQLAlchemy, permite que operações no banco a
     partir de outras classes que não a base, sejam realizadas.
 
-  # email_client.py
-      Responsável por enviar email com as informações do lembrete.
-    Atualmente, um email é enviado quando o lembrete é criado
-    e também quando o lembrete é editado / atualizado.
-    Obs.: Esta classe não está completamente implementada, visto que um 
-    dos objetivos principais é enviar emails de forma agendada, quando certa 
-    regra de negócio for alcançada. O envio agendado não é possível de 
-    forma ideal em ambiente local e demanda configurações específicas no
-    ambiente de teste. Mesmo assim, é possível testar a funcionalidade via
-    swagger ou similares.
+  ### email_client.py
+      Responsável por enviar emails com as informações do lembrete.
+    Atualmente, um email é enviado de forma automática quando o lembrete
+    é criado e também quando o lembrete é editado / atualizado, caso o 
+    usuário opte por isso.
+      Também é possível enviar emails manualmente pela rota /send_email caso
+    alguns requisitos sejam preenchidos. 
 
-  # email.py
+  ### email.py
       Responsável pela relação com a classe Reminder. Esta classe permite
-    atribuir a um reminder um email.
+    atribuir um email a um lembrete.
 
-  # reminder.py
+  ### reminder.py
       Model principal da aplicação. Responsável pela lógica de instanciar
     um modelo do tipo reminder. Também é responsável pela validação
     das regras de envio de um email de lembrete. 
 
-# Pasta schemas:
-  # __init__.py
+## Pasta schemas:
+  ### \_\_init\_\_.py
       Responsável por importar os schemas para a aplicação.
 
-  # error.py
+  ### error.py
       Responsável por definir o padrão das respostas de erro da aplicação.
 
-  # reminder.py
+  ### reminder.py
       Responsável por definir os padrões das respostas das rotas da aplicação,
-    bem como validar o tipo de data passado nas requisições.
+    bem como validar o tipo de informação passada nas requisições.
 
-# Pasta raiz da aplicação:
-  # .env
+## Pasta raiz da aplicação:
+  ### .env
       Responsável pelas variáveis de ambiente do projeto. Por usualmente
     possuir informações sensíveis , não deve ser enviado para o 
     repositório.
 
-  # app.py
+  ### app.py
       Controlador da aplicação. Possui todas as rotas e lógica respectiva.
 
-  # logger.py
+  ### logger.py
       Responsável pela configuração de logs da aplicação. Neste arquivo
     é possível customizar diversas opções de log, como o nível de disparo 
     de log, formatação dos logs e etc.
 
-  # README.md
+  ### README.md
       Este arquivo. Responsável por descrever a aplicação, seus objetivos
     e instruções para execução.
 
-  # requirements.txt
+  ### requirements.txt
       Possui as bibliotecas / módulos necessários para a execução correta
       da aplicação.
