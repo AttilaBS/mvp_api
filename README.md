@@ -49,8 +49,7 @@ Passos para o ambiente virtual:
     #1 python3 -m pip install --user pipx
     #2 pipx install virtualenv
     #3 mkdir <diretorio_ambiente_virtual>
-    #4 cd <diretorio_ambiente_virtual>
-    #5 source <diretorio_ambiente_virtual>/bin/activate
+    #4 source <diretorio_ambiente_virtual>/bin/activate
 
 Em qualquer dos cenários (ambiente virtual ou não), no diretório raiz da
 aplicação instalar os requerimentos com:
