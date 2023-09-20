@@ -18,7 +18,7 @@ class EmailClient():
         email_receiver: str,
         subject: str = 'Aviso de Lembrete',
         email_sender: str = os.environ.get('EMAIL_SENDER'),
-        email_password: str = os.environ.get('EMAIL_PASSWORD')):
+        email_password: str = os.environ.get('APP_PASSWORD')):
         self.name = name
         self.description = description
         self.due_date = due_date

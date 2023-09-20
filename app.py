@@ -46,7 +46,6 @@ def create(form: ReminderSchema):
         reminder.insert_email(Email(form.email))
         session = Session()
         session.add(reminder)
-        session.commit()
         logger.debug('Adicionado lembrete de nome: %s', reminder.name)
 
         if reminder.validate_email_before_send():
@@ -60,6 +59,8 @@ def create(form: ReminderSchema):
                 email_receiver
                 )
             email_client.prepare_and_send_email(flag_create = True)
+        # After email validation and sending or not, commit changes
+        session.commit()
 
         return show_reminder(reminder), 200
 
@@ -156,7 +157,6 @@ def update(form: ReminderUpdateSchema):
         reminder.recurring = form.recurring
         reminder.updated_at = datetime.now()
 
-        session.commit()
         logger.debug('Lembrete atualizado, nome: %s', reminder.name)
 
         if reminder.validate_email_before_send():
@@ -170,6 +170,8 @@ def update(form: ReminderUpdateSchema):
                 email_receiver
                 )
             email_client.prepare_and_send_email(flag_update = True)
+        # After email validation and sending or not, commit changes
+        session.commit()
 
         return show_reminder(reminder), 200
 
